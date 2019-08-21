@@ -1,0 +1,33 @@
+var_1: &cache_key todomvc-vue-dependency-cache-{{ .Branch }}-{{ checksum "package.json" }}
+
+anchor_1: &job_defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:8.11.2
+
+version: 2
+jobs:
+  build:
+    <<: *job_defaults
+    branches:
+      only:
+        - master
+        
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: *cache_key
+
+      - run:
+          name: install-npm-wee
+          command: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: *cache_key
+
+      - run:
+          name: build
+          command: npm run build
